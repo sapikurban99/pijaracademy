@@ -13,8 +13,7 @@ dist
 .DS_Store
 *.pem
 
-# Environment files
-.env
+# Environment files (keep .env for Docker build)
 .env.local
 .env.production
 .env.development

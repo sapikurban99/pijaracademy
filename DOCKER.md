@@ -50,9 +50,11 @@ To change the port:
 3. Update `PORT=3003` in Dockerfile
 
 ### Environment Variables
-Environment variables are loaded from the `.env` file:
+Environment variables are loaded from the `.env` file and passed to both build and runtime:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+**Important**: The `.env` file is required for the Docker build to work correctly.
 
 ## Docker Commands
 
@@ -100,11 +102,20 @@ If you encounter build issues:
 2. Rebuild: `docker-compose up --build --force-recreate`
 
 ### Environment Variables Not Loading
-Ensure your `.env` file exists and contains the required variables:
+Ensure your `.env` file exists in the project root and contains the required variables:
 ```
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
+
+**Common issues:**
+- `.env` file not present → Create the file with required variables
+- `.env` file in `.dockerignore` → Remove `.env` from `.dockerignore` (it should be included)
+- Variables not loading → Verify `.env` file format and variable names match exactly
+
+**Build-time vs Runtime:**
+- Build-time: Variables passed via `args` in docker-compose.yml
+- Runtime: Variables passed via `environment` in docker-compose.yml
 
 ## Architecture
 
@@ -112,8 +123,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 The Dockerfile uses a multi-stage build for optimization:
 1. **Base Stage**: Node.js 20 Alpine setup (Next.js requires >=20.9.0)
 2. **Deps Stage**: Install dependencies
-3. **Builder Stage**: Build Next.js application
-4. **Runner Stage**: Minimal production image
+3. **Builder Stage**: Build Next.js application with environment variables
+4. **Runner Stage**: Minimal production image with environment variables
 
 ### Container Configuration
 - **Base Image**: Node.js 20 Alpine (Next.js requires >=20.9.0)

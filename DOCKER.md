@@ -83,6 +83,12 @@ docker-compose down -v
 
 ## Troubleshooting
 
+### Node.js Version Issues
+Next.js requires Node.js version ">=20.9.0". The Dockerfile uses Node.js 20-alpine to ensure compatibility. If you encounter Node.js version errors:
+1. Verify the Dockerfile uses `FROM node:20-alpine AS base`
+2. Ensure you have the latest Docker images: `docker pull node:20-alpine`
+3. Rebuild the container: `docker-compose up --build --force-recreate`
+
 ### Port Already in Use
 If port 3003 is already in use:
 1. Stop the service using port 3003, or
@@ -104,13 +110,13 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ### Multi-stage Build
 The Dockerfile uses a multi-stage build for optimization:
-1. **Base Stage**: Node.js Alpine setup
+1. **Base Stage**: Node.js 20 Alpine setup (Next.js requires >=20.9.0)
 2. **Deps Stage**: Install dependencies
 3. **Builder Stage**: Build Next.js application
 4. **Runner Stage**: Minimal production image
 
 ### Container Configuration
-- **Base Image**: Node.js 18 Alpine
+- **Base Image**: Node.js 20 Alpine (Next.js requires >=20.9.0)
 - **User**: Non-root user (nextjs:nodejs)
 - **Restart Policy**: unless-stopped
 - **Network**: Bridge network (pijar-network)

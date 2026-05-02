@@ -1,5 +1,5 @@
-# Use Node.js LTS version
-FROM node:18-alpine AS base
+# Use Node.js LTS version (Next.js requires >=20.9.0)
+FROM node:20-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps

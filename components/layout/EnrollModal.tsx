@@ -76,9 +76,9 @@ export default function EnrollModal({
                 {error}
               </p>
             )}
-            <div className="mt-3 text-[11px] text-gray-500 text-center select-all bg-white/5 rounded-md py-1.5 border border-white/5">
+            {/* <div className="mt-3 text-[11px] text-gray-500 text-center select-all bg-white/5 rounded-md py-1.5 border border-white/5">
               Tip: Gunakan <span className="text-gray-300 font-mono font-bold">{course.enrollmentKey}</span> untuk tes.
-            </div>
+            </div> */}
           </div>
 
           <button

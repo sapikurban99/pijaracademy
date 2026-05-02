@@ -3,14 +3,15 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { LogIn, ShieldCheck, User as UserIcon } from "lucide-react";
+import { LogIn, Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const { user, login } = useAuth();
 
-  const [email, setEmail] = useState("hadi@pijar.id");
-  const [password, setPassword] = useState("password123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -28,8 +29,14 @@ export default function LoginPage() {
     setLoading(true);
     setErrorMsg("");
     try {
-      await login(email, password);
-      router.push("/dashboard");
+      const { roleSlug } = await login(email, password);
+
+      // Redirect based on roleSlug
+      if (roleSlug === 'global:admin' || roleSlug === 'global:owner') {
+        router.push("/admin");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (err: any) {
       setErrorMsg(err.message || "An error occurred during login");
     } finally {
@@ -37,18 +44,6 @@ export default function LoginPage() {
     }
   };
 
-  const handleQuickLogin = async (type: "admin" | "user") => {
-    setLoading(true);
-    const testEmail = type === "admin" ? "admin@pijar.id" : "hadi@pijar.id";
-    try {
-      await login(testEmail, type);
-      router.push("/dashboard");
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 relative bg-[#050508] select-none">
@@ -57,7 +52,7 @@ export default function LoginPage() {
 
       <div className="glass-panel w-full max-w-md p-8 rounded-2xl shadow-2xl relative overflow-hidden bg-black/40 border border-white/5">
         {/* Accent Bar */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-400 to-purple-500"></div>
+        <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-orange-400 to-purple-500"></div>
 
         <div className="text-center mb-8">
           <h1 className="text-3xl font-extrabold tracking-tight mb-2">
@@ -82,7 +77,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-sm font-medium text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all shadow-inner"
-              placeholder="name@company.com"
+              placeholder=""
               required
             />
           </div>
@@ -90,49 +85,38 @@ export default function LoginPage() {
             <label className="block text-xs font-semibold text-gray-400 mb-1.5">
               Password
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-sm font-medium text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all shadow-inner"
-              placeholder="••••••••"
-              required
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-sm font-medium text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all shadow-inner pr-12"
+                placeholder=""
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors cursor-pointer"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+            </div>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-lg text-white font-bold text-sm mt-4 flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-orange-500 hover:from-purple-500 hover:to-orange-400 shadow-lg shadow-purple-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="w-full py-3.5 rounded-lg text-white font-bold text-sm mt-4 flex items-center justify-center gap-2 bg-linear-to-r from-purple-600 to-orange-500 hover:from-purple-500 hover:to-orange-400 shadow-lg shadow-purple-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             <LogIn className="w-4 h-4" />
             {loading ? "Signing in..." : "Sign In to Portal"}
           </button>
         </form>
-
-        <div className="mt-8 border-t border-white/10 pt-6">
-          <p className="text-xs font-medium text-center text-gray-500 mb-4 uppercase tracking-wider">
-            Quick Sign In
-          </p>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => handleQuickLogin("user")}
-              disabled={loading}
-              className="flex items-center justify-center gap-2 py-2.5 px-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs font-medium text-white transition-all hover:-translate-y-0.5 cursor-pointer"
-            >
-              <UserIcon className="w-3.5 h-3.5 text-purple-400" />
-              Student Mode
-            </button>
-            <button
-              onClick={() => handleQuickLogin("admin")}
-              disabled={loading}
-              className="flex items-center justify-center gap-2 py-2.5 px-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs font-medium text-white transition-all hover:-translate-y-0.5 cursor-pointer"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-orange-400" />
-              Admin Mode
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );

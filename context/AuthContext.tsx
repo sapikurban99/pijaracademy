@@ -3,11 +3,16 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { getUser, saveUser, User } from "@/lib/db";
 
+interface AuthUser extends User {
+  token?: string;
+  roleSlug?: string;
+}
+
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   isAdmin: boolean;
   isLoaded: boolean;
-  login: (email: string, password?: string, role?: "admin" | "user") => Promise<void>;
+  login: (email: string, password?: string, requestedRole?: "admin" | "user") => Promise<{ roleSlug: string; token: string }>;
   logout: () => void;
   toggleRole: () => void;
 }
@@ -15,7 +20,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -32,34 +37,47 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const login = async (email: string, password?: string, requestedRole?: "admin" | "user") => {
-    // Explicitly check for specific Admin Emails
-    const ADMIN_EMAILS = ["admin@pijar.id", "ceo@pijar.id", "hadi@pijar.id", "admin@pijarteknologi.id"];
-    
-    // Simple password check for admin@pijarteknologi.id
-    if (email.trim().toLowerCase() === "admin@pijarteknologi.id" && password && password !== "123") {
-      throw new Error("Password salah!");
+    // Call the Pijar Teknologi API
+    const response = await fetch('https://pijarteknologi.id/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        password: password || ''
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Login failed');
     }
 
-    // Generate a fixed or custom uid based on email
-    const uid = `u-${Buffer.from(email).toString("base64").substring(0, 8)}`;
+    // Determine local role based on API roleSlug
     let role: "admin" | "user" = "user";
-
-    if (ADMIN_EMAILS.includes(email.trim().toLowerCase()) || requestedRole === "admin") {
+    if (data.roleSlug === 'global:admin' || data.roleSlug === 'global:owner') {
       role = "admin";
     }
 
-    // Check database if this user is stored
-    const existingUser = await getUser(uid);
-    if (existingUser) {
-      role = existingUser.role;
-    } else {
-      // First-time user, save to database
-      await saveUser({ uid, email, role });
-    }
+    // Generate uid based on email
+    const uid = `u-${Buffer.from(email).toString("base64").substring(0, 8)}`;
 
-    const newUser: User = { uid, email, role };
+    // Create user object
+    const newUser: AuthUser = {
+      uid,
+      email,
+      role,
+      token: data.token,
+      roleSlug: data.roleSlug
+    };
+
     setUser(newUser);
     localStorage.setItem("pijar_user", JSON.stringify(newUser));
+
+    // Return roleSlug and token for redirect logic
+    return { roleSlug: data.roleSlug, token: data.token };
   };
 
   const logout = () => {
@@ -70,7 +88,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const toggleRole = async () => {
     if (!user) return;
     const newRole = user.role === "admin" ? "user" : "admin";
-    const updatedUser: User = { ...user, role: newRole };
+    const updatedUser: AuthUser = { ...user, role: newRole };
     setUser(updatedUser);
     localStorage.setItem("pijar_user", JSON.stringify(updatedUser));
     await saveUser(updatedUser);

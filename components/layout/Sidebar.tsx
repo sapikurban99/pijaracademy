@@ -1,13 +1,12 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { LayoutGrid, BookCheck, ShieldAlert, LogOut } from "lucide-react";
+import { LayoutGrid, ShieldAlert, LogOut } from "lucide-react";
 
 export default function Sidebar() {
-  const { user, isAdmin, logout, toggleRole } = useAuth();
+  const { user, isAdmin, logout } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -59,17 +58,13 @@ export default function Sidebar() {
       </div>
 
       <div className="p-4 border-t border-white/10">
-        <div
-          className="flex items-center justify-between p-3 glass-panel rounded-lg cursor-pointer hover:border-white/20 transition-all"
-          onClick={toggleRole}
-          title="Click to toggle role for testing"
-        >
+        <div className="flex items-center justify-between p-3 glass-panel rounded-lg transition-all">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-500 to-orange-400 flex items-center justify-center text-xs font-bold text-white shadow-[0_0_10px_rgba(160,32,240,0.5)] select-none">
+            <div className="w-8 h-8 rounded-full bg-linear-to-tr from-purple-500 to-orange-400 flex items-center justify-center text-xs font-bold text-white shadow-[0_0_10px_rgba(160,32,240,0.5)] select-none">
               {user.email.slice(0, 1).toUpperCase()}
             </div>
             <div>
-              <p className="text-xs font-medium text-white max-w-[120px] truncate">
+              <p className="text-xs font-medium text-white max-w-30 truncate">
                 {user.email.split("@")[0]}
               </p>
               <p className="text-[10px] text-gray-400 font-semibold">

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Course } from "@/lib/db";
-import { X } from "lucide-react";
+import { X, KeyRound } from "lucide-react";
 
 interface EnrollModalProps {
   course: Course | null;
@@ -35,59 +35,71 @@ export default function EnrollModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4">
       {/* Overlay */}
       <div
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 bg-black/75 backdrop-blur-sm"
         onClick={onClose}
-      ></div>
+      />
 
-      {/* Modal Content */}
-      <div className="bg-white/5 border border-white/10 w-full max-w-sm rounded-2xl p-6 relative z-10 transform transition-all shadow-[0_0_40px_rgba(249,115,22,0.15)] backdrop-blur-md">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
-        >
-          <X className="w-5 h-5" />
-        </button>
+      {/* Panel */}
+      <div className="relative z-10 w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl border border-white/8 bg-black/70 backdrop-blur-xl">
+        {/* Accent top line */}
+        <div className="h-[2px] w-full bg-gradient-to-r from-orange-400 to-purple-500" />
 
-        <h3 className="text-lg font-bold text-white mb-1">Enrollment Key</h3>
-        <p className="text-xs text-gray-400 mb-5 leading-relaxed">
-          Masukkan kode akses untuk kelas{" "}
-          <span className="text-orange-400 font-bold">{course.title}</span>.
-        </p>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <input
-              type="text"
-              placeholder="e.g. PIJAR-NEXTJS-KEY"
-              value={keyInput}
-              onChange={(e) => {
-                setKeyInput(e.target.value);
-                setError("");
-              }}
-              className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm font-mono text-center tracking-widest uppercase focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 text-white placeholder-gray-500 shadow-inner transition-all"
-              required
-              autoFocus
-            />
-            {error && (
-              <p className="text-xs text-red-400 mt-2 font-medium text-center">
-                {error}
-              </p>
-            )}
-            {/* <div className="mt-3 text-[11px] text-gray-500 text-center select-all bg-white/5 rounded-md py-1.5 border border-white/5">
-              Tip: Gunakan <span className="text-gray-300 font-mono font-bold">{course.enrollmentKey}</span> untuk tes.
-            </div> */}
+        <div className="p-6">
+          {/* Header */}
+          <div className="flex items-start justify-between mb-5">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/20 flex items-center justify-center shrink-0">
+                <KeyRound className="w-4.5 h-4.5 text-orange-400" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white leading-none mb-1">Enrollment Key</h3>
+                <p className="text-[11px] text-gray-500">
+                  <span className="text-orange-400 font-semibold">{course.title}</span>
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-gray-500 hover:text-white hover:bg-white/8 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
 
-          <button
-            type="submit"
-            className="w-full py-3 rounded-xl text-black font-bold text-sm bg-orange-500 hover:bg-orange-400 hover:shadow-[0_0_15px_rgba(249,115,22,0.4)] transition-all cursor-pointer"
-          >
-            Akses Modul
-          </button>
-        </form>
+          <p className="text-xs text-gray-400 mb-4 leading-relaxed">
+            Masukkan kode akses untuk mengikuti kelas ini.
+          </p>
+
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <div>
+              <input
+                type="text"
+                placeholder="PIJAR-XXXX-KEY"
+                value={keyInput}
+                onChange={(e) => {
+                  setKeyInput(e.target.value);
+                  setError("");
+                }}
+                className="w-full bg-white/4 border border-white/8 rounded-xl px-4 py-3 text-sm font-mono text-center tracking-widest uppercase focus:outline-none focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/15 text-white placeholder-gray-600 transition-all"
+                required
+                autoFocus
+              />
+              {error && (
+                <p className="text-xs text-red-400 mt-2 font-medium text-center">{error}</p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 rounded-xl text-black font-bold text-sm bg-orange-500 hover:bg-orange-400 hover:shadow-[0_0_20px_rgba(249,115,22,0.3)] transition-all cursor-pointer"
+            >
+              Akses Modul
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

@@ -125,8 +125,8 @@
   body {
     background-color: #050508;
     color: #e5e7eb;
-    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-    background-size: 24px 24px;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 28px 28px;
     font-family: var(--font-sans);
   }
   html {
@@ -134,36 +134,79 @@
   }
 }
 
+/* ─── Glass panel ─── */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.025) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
 }
+
+/* ─── Brand gradient text / button ─── */
 .text-gradient {
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-image: linear-gradient(to right, #FF9933, #A020F0);
+  background-image: linear-gradient(135deg, #FF9933 0%, #A020F0 100%);
 }
 .btn-gradient {
-  background: linear-gradient(to right, #FF9933, #A020F0);
-  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #FF9933 0%, #A020F0 100%);
+  transition: all 0.25s ease;
 }
 .btn-gradient:hover {
-  box-shadow: 0 0 15px rgba(160, 32, 240, 0.5);
-  transform: translateY(-2px);
+  box-shadow: 0 0 24px rgba(160, 32, 240, 0.45);
+  transform: translateY(-1px);
 }
+
+/* ─── Aurora background blobs ─── */
 .aurora-1 {
   position: fixed; top: -10%; left: -10%; width: 50vw; height: 50vw;
-  background: radial-gradient(circle, rgba(160,32,240,0.15) 0%, rgba(0,0,0,0) 70%);
+  background: radial-gradient(circle, rgba(160,32,240,0.12) 0%, rgba(0,0,0,0) 70%);
   filter: blur(120px); z-index: -1;
 }
 .aurora-2 {
   position: fixed; bottom: -10%; right: -10%; width: 50vw; height: 50vw;
-  background: radial-gradient(circle, rgba(255,153,51,0.1) 0%, rgba(0,0,0,0) 70%);
+  background: radial-gradient(circle, rgba(255,153,51,0.08) 0%, rgba(0,0,0,0) 70%);
   filter: blur(120px); z-index: -1;
 }
-::-webkit-scrollbar { width: 6px; }
+
+/* ─── Shimmer skeleton loader ─── */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.03) 0%,
+    rgba(255,255,255,0.07) 50%,
+    rgba(255,255,255,0.03) 100%
+  );
+  background-size: 600px 100%;
+  animation: shimmer 1.6s infinite linear;
+  border-radius: 0.75rem;
+}
+
+/* ─── Page fade-up animation ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fadeUp 0.35s ease forwards;
+}
+
+/* ─── Mobile sidebar slide-in ─── */
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+.sidebar-mobile-enter {
+  animation: slideInLeft 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }
